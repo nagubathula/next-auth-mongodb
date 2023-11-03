@@ -28,8 +28,7 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              {session.user?.role}
-              {/* {session.user?.role} */}
+              {session.user?.email}
               <li>
                 <button
                   onClick={() => {
