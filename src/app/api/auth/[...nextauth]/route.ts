@@ -7,6 +7,7 @@ import User from "@/models/User";
 import connect from "@/utils/db";
 
 export const authOptions: any = {
+  secret: process.env.NEXTAUTH_SECRET,
   // Configure one or more authentication providers
   providers: [
     CredentialsProvider({
@@ -34,10 +35,10 @@ export const authOptions: any = {
         }
       },
     }),
-    GithubProvider({
-      clientId: process.env.GITHUB_ID ?? "",
-      clientSecret: process.env.GITHUB_SECRET ?? "",
-    }),
+    // GithubProvider({
+    //   clientId: process.env.GITHUB_ID ?? "",
+    //   clientSecret: process.env.GITHUB_SECRET ?? "",
+    // }),
     // ...add more providers here
   ],
   callbacks: {

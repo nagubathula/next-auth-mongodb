@@ -4,56 +4,66 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-const Register = () => {
+const Product = () => {
   const [error, setError] = useState("");
   const router = useRouter();
   const { data: session, status: sessionStatus } = useSession();
 
   useEffect(() => {
-    if (sessionStatus === "authenticated") {
-      router.replace("/dashboard");
+    if (sessionStatus == "authenticated") {
+      router.replace("/product");
+    }
+    if (sessionStatus !== "authenticated") {
+      router.replace("/login");
     }
   }, [sessionStatus, router]);
 
-  const isValidEmail = (email: string) => {
-    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-    return emailRegex.test(email);
-  };
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    const email = e.target[0].value;
-    const password = e.target[1].value;
-    const role = e.target[2].value;
+    const name = e.target[0].value;
+    const price = e.target[1].value;
+    const category = e.target[2].value;
+    const code = e.target[3].value;
 
-    if (!isValidEmail(email)) {
-      setError("Email is invalid");
+    if (!name) {
+      setError("Name is required");
       return;
     }
 
-    if (!password || password.length < 8) {
-      setError("Password is invalid");
+    if (!price || price <= 0) {
+      setError("Price is invalid");
       return;
     }
-  
+    
+    if (!category) {
+      setError("Category is required");
+      return;
+    }
+
+    if (!code) {
+      setError("Code is required");
+      return;
+    }
 
     try {
-      const res = await fetch("/api/register", {
+      const res = await fetch("/api/products/productdb", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email,
-          password,
-          role
+          name,
+          price,
+          category,
+          code
         }),
       });
       if (res.status === 400) {
-        setError("This email is already registered");
+        setError("This product already exists");
       }
       if (res.status === 200) {
         setError("");
-        router.push("/login");
+        router.push("/product");
       }
     } catch (error) {
       setError("Error, try again");
@@ -66,47 +76,50 @@ const Register = () => {
   }
 
   return (
-    sessionStatus !== "authenticated" && (
+    sessionStatus === "authenticated" && (
       <div className="flex min-h-screen flex-col items-center justify-between p-24">
         <div className="bg-[#212121] p-8 rounded shadow-md w-96">
-          <h1 className="text-4xl text-center font-semibold mb-8">Register</h1>
+          <h1 className="text-4xl text-center font-semibold mb-8">Add Product</h1>
           <form onSubmit={handleSubmit}>
             <input
               type="text"
               className="w-full border border-gray-300 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:border-blue-400 focus:text-black"
-              placeholder="Email"
+              placeholder="Name"
               required
             />
             <input
-              type="password"
+              type="number"
               className="w-full border border-gray-300 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:border-blue-400 focus:text-black"
-              placeholder="Password"
+              placeholder="Price"
               required
             />
-            <select
+             <input
+              type="text"
               className="w-full border border-gray-300 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:border-blue-400 focus:text-black"
+              placeholder="Category"
               required
-              title="role"
-            >
-              <option value="">Select a role</option>
-              <option value="admin">Admin</option>
-              <option value="user">User</option>
-            </select>
+            />
+             <input
+              type="text"
+              className="w-full border border-gray-300 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:border-blue-400 focus:text-black"
+              placeholder="Code"
+              required
+            />
             <button
               type="submit"
               className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
             >
               {" "}
-              Register
+              Add Product
             </button>
             <p className="text-red-600 text-[16px] mb-4">{error && error}</p>
           </form>
           <div className="text-center text-gray-500 mt-4">- OR -</div>
           <Link
             className="block text-center text-blue-500 hover:underline mt-2"
-            href="/login"
+            href="/product/list"
           >
-            Login with an existing account
+            View Product List
           </Link>
         </div>
       </div>
@@ -114,4 +127,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Product;
