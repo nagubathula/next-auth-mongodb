@@ -17,6 +17,9 @@ const Navbar = () => {
           <Link href="/dashboard">
             <li>Dashboard</li>
           </Link>
+          <Link href="/product">
+            <li>Add Products</li>
+          </Link>
           {!session ? (
             <>
               <Link href="/login">
